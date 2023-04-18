@@ -6,17 +6,27 @@ class UsersController < ApplicationController
     # get the username from params
     # get the password from params
 
-    # look up the recoerd from the db matching username
+    # look up the record from the db matching username
     user = User.where({ :username => un }).at(0)
     # if there's no receord, redirect back to the sign in form
     if user == nil
       redirect_to("/user_sign_in", { :alert => "No one by that name round these parts"})
-
-    # if thee is a record, check to se fipasswoard matches
-    # if not redirect to sign in form
-    # if so, set the cokkie 
-    # redirect to homepage
-    render({ :plain => "hi"})
+    else
+      # if the is a record, check to see if password matches
+      if user.authenticate(pw)
+        session.store(:user_id, user.id)
+        
+        redirect_to("/", { :notice => "Wlecome back, " + user.username + "!" })
+      else
+        # if not redirect to sign in form
+        redirect_to("/user_sign_in", { :alert => "Nice try!"})
+      end
+      
+      # if not redirect to sign in form
+      # if so, set the cokkie 
+      # redirect to homepage
+    #render({ :plain => "hi"})
+    end
   end
 
   
@@ -62,7 +72,7 @@ class UsersController < ApplicationController
     if save_status == true
       session.store(:user_id, user.id)
 
-    redirect_to("/users/#{user.username}", { :notice => "Welcome, " + user.username + "!"})
+      redirect_to("/users/#{user.username}", { :notice => "Welcome, " + user.username + "!"})
     else
       redirect_to("/user_sign_up", { :alert => user.errors.full_message.to_sentence })
     end
