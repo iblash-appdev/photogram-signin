@@ -1,4 +1,3 @@
-
 class UsersController < ApplicationController
   def authenticate
     un = params.fetch("input_username")
